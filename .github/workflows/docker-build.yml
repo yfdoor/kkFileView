@@ -16,8 +16,10 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code from tag
         uses: actions/checkout@v4
+        with:
+          ref: v${{ github.event.inputs.build_version }}  # 检出指定标签的代码
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
