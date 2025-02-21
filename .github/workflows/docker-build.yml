@@ -1,14 +1,16 @@
 name: Build and Push Docker Image
 
 on:
-  push:
-    tags:
-      - 'v*' # 当推送版本标签时触发（例如 v4.4.0）
-  workflow_dispatch: # 允许手动触发
+  workflow_dispatch:
+    inputs:
+      build_version:
+        description: '输入要构建的版本号 (例如 4.4.0)'
+        required: true
+        type: string
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  IMAGE_NAME: yfdoor/kkfileview # 修改为你的 Docker Hub 用户名
+  IMAGE_NAME: yfdoor/kkfileview  # 修改为你的 Docker Hub 用户名
 
 jobs:
   build-and-push:
@@ -26,12 +28,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract version
-        id: version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -40,4 +36,4 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
+            ${{ env.IMAGE_NAME }}:${{ github.event.inputs.build_version }}
