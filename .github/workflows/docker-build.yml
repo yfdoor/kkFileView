@@ -1,0 +1,86 @@
+name: Docker Build and Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_tag:
+        description: '请输入版本号（确保分支名格式为 vx.x.x，如 v4.4.0）'
+        required: true
+        default: '4.4.0'
+
+env:
+  REGISTRY: docker.io
+  BASE_IMAGE: "yfdoor/kkfileview-base"
+  APP_IMAGE: "yfdoor/kkfileview"
+  BASE_TAG: ${{ github.event.inputs.base_tag }}
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    if: github.event.sender.login == github.repository_owner
+    permissions:
+      contents: read
+      packages: write
+      actions: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ env.BASE_TAG }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+
+      - name: Build application package
+        run: |
+          mvn clean package -DskipTests
+
+      - name: Replace Dockerfile base image
+        run: |
+          sed -i 's|keking/kkfileview-base|yfdoor/kkfileview-base|g' Dockerfile
+          echo "Dockerfile 修改完成："
+          cat Dockerfile
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build kkfileview-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker/kkfileview-base
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}:${{ env.BASE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}:latest
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build main image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.APP_IMAGE }}:${{ env.BASE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.APP_IMAGE }}:latest
+          build-args: |
+            BASE_IMAGE=${{ env.BASE_IMAGE }}:${{ env.BASE_TAG }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
