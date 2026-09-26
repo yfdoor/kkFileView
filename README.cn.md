@@ -1,6 +1,6 @@
 # kkFileView
 文档在线预览项目解决方案，项目使用流行的spring boot搭建，易上手和部署。万能的文件预览开源项目，基本支持主流文档格式预览，如：
-1. 支持 doc, docx, xls, xlsx, xlsm, ppt, pptx, csv, tsv, dotm, xlt, xltm, dot, dotx,xlam, xla ,pages 等 Office 办公文档
+1. 支持 doc, docx, xls, xlsx, xlsm, ppt, pptx, csv, tsv, dotm, xlt, xltm, dot, dotx,xlam, xla ,pages ,pptm 等 Office 办公文档
 2. 支持 wps, dps, et, ett, wpt 等国产 WPS Office 办公文档
 3. 支持 odt, ods, ots, odp, otp, six, ott, fodt, fods 等OpenOffice、LibreOffice 办公文档
 4. 支持 vsd, vsdx 等 Visio 流程图文件
@@ -9,18 +9,18 @@
 7. 支持 pdf ,ofd, rtf 等文档
 8. 支持 xmind 软件模型文件
 9. 支持 bpmn 工作流文件
-10. 支持 eml 邮件文件
+10. 支持 eml, msg 邮件文件
 11. 支持 epub 图书文档
 12. 支持 obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, ifc, brep, step, iges, fcstd, bim 等 3D 模型文件
 13. 支持 dwg, dxf, dwf, iges , igs, dwt, dng, ifc, dwfx, stl, cf2, plt 等 CAD 模型文件
 14. 支持 txt, xml(渲染), xbrl(渲染), md(渲染), java, php, py, js, css 等所有纯文本
 15. 支持 zip, rar, jar, tar, gzip, 7z 等压缩包
-16. 支持 jpg, jpeg, png, gif, bmp, ico, jfif, webp 等图片预览（翻转，缩放，镜像）
+16. 支持 jpg, jpeg, png, gif, bmp, ico, jfif, webp ,heic ,heif等图片预览（翻转，缩放，镜像）
 17. 支持 tif, tiff 图信息模型文件
 18. 支持 tga 图像格式文件
 19. 支持 svg 矢量图像格式文件
 20. 支持 mp3,wav,mp4,flv 等音视频格式文件
-21. 支持 avi,mov,rm,webm,ts,rm,mkv,mpeg,ogg,mpg,rmvb,wmv,3gp,ts,swf 等视频格式转码预览
+21. 支持 avi,mov,rm,webm,ts,rm,mkv,mpeg,ogg,mpg,rmvb,wmv,3gp,ts 等视频格式转码预览
 22. 支持 dcm 等医疗数位影像预览
 23. 支持 drawio 绘图预览
 
@@ -148,6 +148,97 @@ pdf预览模式预览效果如下
 ![输入图片说明](https://gitee.com/uploads/images/2017/1213/100221_ea15202e_492218.png "屏幕截图.png")
 
 ### 历史更新记录
+
+#### > 2026年08月14日，v5.0.2 补丁版本发布 ：
+
+#### 安全修复
+1. 将不可信 HTML 预览放入不具有同源权限的 iframe 沙箱，并默认禁用其中的 JavaScript，避免被预览文件在 kkFileView 应用源中执行脚本（GHSA-9wcf-jxxf-w2g2）
+2. 默认禁用演示文件删除接口，将接口改为 POST，并要求显式配置密码后进行精确比较（GHSA-f3qx-xrwc-5428）
+
+#### 修复问题
+1. 在 PDF 转图服务启动时刷新 ImageIO 插件，使 JBIG2 等嵌套 JAR 图像读取器能够被发现，避免 PDF 转图片预览时部分图像丢失
+
+#### 升级说明
+1. 建议所有 v5.0.1 及更早版本用户尽快升级到 v5.0.2
+2. 本版本继续要求 JDK 21 及以上，现有 v5.0.1 配置可直接沿用
+3. 文件删除功能现在默认禁用；如确需启用，请通过 `KK_DELETE_PASSWORD` 或外部 `delete.password` 设置独立强密码，并将 `/deleteFile` 调用改为 POST
+4. `kk.scriptjs` 现在默认为 `false`；显式启用后，脚本仍只会在隔离的 iframe 沙箱内运行
+
+#### > 2026年07月13日，v5.0.1 补丁版本发布 ：
+
+#### 安全修复
+1. 修复 `/addTask` 未经过信任主机和本地目录过滤，可能导致服务端请求伪造（SSRF）的问题（GHSA-gwwj-52hv-6g2m）
+2. 修复 `/listFiles` 的 `directory` 参数可越出演示目录，造成路径遍历和目录信息泄露的问题（GHSA-pmp8-g8p2-p6jq）
+
+#### 修复问题
+1. 修复 PDF 跨域、页码定位、文本高亮、打印和打印水印相关问题
+2. 修复 PDF 在反向代理场景下的绝对路径问题，以及水印和高亮内容包含特殊字符时的解析失败
+3. 修复 Redis 单机、集群、主从、哨兵模式配置不一致和地址协议缺失问题
+4. 修复下载 MIME 类型校验失败后仍返回成功、HTTP 错误原因不明确，以及共享 HTTP Client 被错误关闭的问题
+5. 修复 LuckyExcel 数据校验类型未映射时的 xlsx 解析崩溃
+
+#### 优化内容
+1. 大型 xlsx 文件改用 Web Worker 执行 LuckyExcel 解析，并在 Worker 不可用或异常时自动回退主线程
+2. 新增 `pdf.sidebar.open` 配置，可控制 PDF 预览是否默认打开侧栏
+3. Maven CI 增加 Linux、Windows、macOS 构建验证
+4. 新增仓库安全策略和私密漏洞报告入口
+
+#### 升级说明
+1. 建议所有 v5.0.0 及更早版本用户尽快升级到 v5.0.1
+2. 本版本继续要求 JDK 21 及以上，现有 v5.0.0 配置可直接沿用
+
+#### > 2026年04月14日，v5.0.0 版本发布 ：
+#### 优化内容
+1. xlsx 前端解析优化 - 提升Excel文件前端渲染性能
+2. 图片解析优化 - 改进图片处理机制
+3. tif 解析优化 - 增强TIF格式支持
+4. svg 解析优化 - 优化SVG矢量图渲染
+5. json 解析优化 - 改进JSON文件处理
+6. ftp多客户端接入优化 - 提升FTP服务兼容性
+7. 首页目录访问优化 - 采用post服务端分页机制
+8. marked 解析优化 - 改进Markdown渲染
+9. 压缩包预览页重构为单工作区布局，支持目录折叠与右侧内嵌预览
+10. 优化压缩包内文件类型标识，以及单图预览页的展示样式
+11. 补充面向工程自动化与编码代理的仓库说明文档
+12. 重构演示门户页面，包括首页、接入说明、版本记录与赞助页
+
+#### 新增功能
+1. msg邮件解析 - 新增msg格式邮件文件预览支持
+2. heic图片解析 - 新增HEIC格式图片预览支持
+3. 跨域方法 - 新增跨域处理机制
+4. 高亮方法 - 新增文本高亮功能
+5. 页码方法 - 新增文档页码控制
+6. AES加密方法 - 新增AES加密支持
+7. Basic鉴权方法 - 新增Basic认证机制
+8. 秘钥方法 - 新增密钥管理功能
+9. 防重复转换 - 新增重复文件转换防护
+10. 异步等待 - 新增异步处理机制
+11. 上传限制 - 新增不支持文件上传限制
+12. cadviewer转换方法 - 新增CAD查看器转换功能
+
+#### 修复问题
+1. 压缩包路径问题 - 修复压缩包内部路径处理
+2. 安全问题 - 修复安全漏洞
+3. 图片水印不全问题 - 修复水印显示不完整
+4. SSL自签证书接入问题 - 修复自签名证书兼容性
+5. 修复压缩包内 Office 文件在重复解压后被追加写坏，导致一直卡在加载中的问题
+6. Office 默认预览改为 PDF 模式，且 PDF 预览默认打开缩略图侧栏
+7. 启动脚本改为自动发现当前发布包中的 jar，移除过时的硬编码 jar 名称
+8. 更新 Docker 与发布辅助文档，使其与 5.0.0 发布线保持一致
+9. 修复 OFD 表格竖线溢出导致的渲染异常
+10. 修复 PDF.js 兼容性补丁，避免兼容环境下的预览报错
+
+#### 更新内容
+1. JDK版本要求 - 强制要求JDK 21及以上版本
+2. pdf前端解析更新 - 升级PDF前端渲染组件
+3. odf前端解析更新 - 升级ODF文档前端渲染
+4. 3D模型前端解析更新 - 升级3D模型查看器
+5. pdf后端异步转换优化 - 实现多线程异步转换
+6. tif后端异步转换优化 - 实现多线程异步转换
+7. 视频后端异步转换优化 - 实现多线程异步转换
+8. CAD后端异步转换优化 - 实现多线程异步转换
+9. 默认预览配置策略调整 - Office 预览默认切换为 PDF 模式，默认隐藏图片/PDF 模式切换按钮，且 PDF 预览默认展开缩略图侧栏。若升级后仍需保持旧的图片优先体验，请显式设置 `office.preview.type=image` 和 `office.preview.switch.disabled=false`。
+10. 信任域名配置匹配策略扩展 - `trust.host` 及相关规则现已支持通配符和 CIDR 匹配，升级后如果你依赖域名/IP 模式匹配，需要重新检查白名单和黑名单的实际生效范围
 
 #### > 2025年01月16日，v4.4.0 版本发布 ：
 
@@ -427,4 +518,3 @@ dcm医疗数位影像  引用于 [dcmjs](https://github.com/dcmjs-org/dcmjs )开
 - 本项目诞生于[凯京集团]，在取得公司高层同意后以 Apache 协议开源出来反哺社区，在此特别感谢凯京集团，以及集团领导[@唐老大](https://github.com/tangshd)的支持、@端木详笑的贡献。
 - 本项目已脱离公司由[KK开源社区]维护发展壮大，感谢所有给 kkFileView 提 Issue 、Pr 开发者
 - 本项目引入的第三方组件已在 '关于引用' 列表列出，感谢这些项目，让 kkFileView 更出色
-

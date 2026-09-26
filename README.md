@@ -4,7 +4,7 @@
 
 Document online preview project solution, built using the popular Spring Boot framework for easy setup and deployment. This versatile open source project provides basic support for a wide range of document formats, including:
 
-1. Supports Office documents such as `doc`, `docx`, `xls`, `xlsx`, `xlsm`, `ppt`, `pptx`, `csv`, `tsv`, , `dotm`, `xlt`, `xltm`, `dot`, `xlam`, `dotx`, `xla,` ,`pages` etc.
+1. Supports Office documents such as `doc`, `docx`, `xls`, `xlsx`, `xlsm`, `ppt`, `pptx`, `csv`, `tsv`, , `dotm`, `xlt`, `xltm`, `dot`, `xlam`, `dotx`, `xla,` ,`pages` ,`pptm` etc.
 2. Supports domestic WPS Office documents such as `wps`, `dps`, `et` , `ett`, ` wpt`.
 3. Supports OpenOffice, LibreOffice office documents such as `odt`, `ods`, `ots`, `odp`, `otp`, `six`, `ott`, `fodt` and `fods`.
 4. Supports Visio flowchart files such as `vsd`, `vsdx`.
@@ -13,13 +13,13 @@ Document online preview project solution, built using the popular Spring Boot fr
 7. Supports document formats like `pdf`, `ofd`, and `rtf`.
 8. Supports software model files like `xmind`. 
 9. Support for `bpmn` workflow files.
-10. Support for `eml` mail files
+10. Support for `eml` , `msg` mail files
 11. Support for `epub` book documents
 12. Supports 3D model files like `obj`, `3ds`, `stl`, `ply`, `gltf`, `glb`, `off`, `3dm`, `fbx`, `dae`, `wrl`, `3mf`, `ifc`, `brep`, `step`, `iges`, `fcstd`, `bim`, etc.
 13. Supports CAD model files such as `dwg`, `dxf`, `dwf`  `iges` ,` igs`, `dwt` , `dng` , `ifc` , `dwfx` , `stl` , `cf2` , `plt`, etc.
 14. Supports all plain text files such as `txt`, `xml` (rendering), `md` (rendering), `java`, `php`, `py`, `js`, `css`, etc.
 15. Supports compressed packages such as `zip`, `rar`, `jar`, `tar`, `gzip`, `7z`, etc.
-16. Supports image previewing (flip, zoom, mirror) of `jpg`, `jpeg`, `png`, `gif`, `bmp`, `ico`, `jfif`, `webp`, etc.
+16. Supports image previewing (flip, zoom, mirror) of `jpg`, `jpeg`, `png`, `gif`, `bmp`, `ico`, `jfif`, `webp`, `heic`,  ,`heif` etc.
 17. Supports image information model files such as `tif` and `tiff`.
 18. Supports image format files such as `tga`.
 19. Supports vector image format files such as `svg`.
@@ -62,6 +62,224 @@ URL：[https://file.kkview.cn](https://file.kkview.cn)
 1. First step：`git pull https://github.com/kekingcn/kkFileView.git`
 
 2. second step：Run the main method of `/server/src/main/java/cn/keking/ServerMain.java`. After starting,visit `http://localhost:8012/`.
+
+## Change History
+
+### Version 5.0.2 (August 14, 2026)
+
+#### Security Fixes
+1. Sandboxed untrusted HTML previews in an opaque-origin iframe and disabled embedded JavaScript by default, preventing previewed files from executing in the kkFileView application origin (GHSA-9wcf-jxxf-w2g2)
+2. Disabled the demo file deletion endpoint by default, changed it to POST, and required an explicitly configured password with exact comparison (GHSA-f3qx-xrwc-5428)
+
+#### Fixes
+1. Refreshed ImageIO plugins when PDF conversion starts so nested JAR providers such as the JBIG2 reader are discovered, preventing images from disappearing in PDF-to-image previews
+
+#### Upgrade Notes
+1. All users running v5.0.1 or earlier are strongly encouraged to upgrade to v5.0.2
+2. JDK 21 or higher remains required, and existing v5.0.1 configuration can be reused
+3. File deletion is now disabled unless `KK_DELETE_PASSWORD` or an external `delete.password` is set to an independent strong password; integrations must call `/deleteFile` with POST
+4. `kk.scriptjs` now defaults to `false`; when explicitly enabled, scripts still run only inside the isolated iframe sandbox
+
+### Version 5.0.1 (July 13, 2026)
+
+#### Security Fixes
+1. Fixed `/addTask` bypassing trusted-host and local-directory filters, which could allow server-side request forgery (SSRF) (GHSA-gwwj-52hv-6g2m)
+2. Fixed the `/listFiles` `directory` parameter escaping the demo directory, which could allow path traversal and directory information disclosure (GHSA-pmp8-g8p2-p6jq)
+
+#### Fixes
+1. Fixed PDF cross-origin access, page positioning, text highlighting, printing, and print watermark issues
+2. Fixed PDF absolute paths behind reverse proxies and parsing failures when watermark or highlight text contains special characters
+3. Fixed inconsistent Redis settings across standalone, cluster, master-replica, and sentinel modes, including missing address protocols
+4. Fixed successful responses after MIME validation failures, unclear HTTP error reporting, and accidental closure of a shared HTTP client
+5. Fixed xlsx parsing crashes when LuckyExcel data-validation types have no mapping
+
+#### Improvements
+1. Moved LuckyExcel parsing for large xlsx files into a Web Worker, with automatic main-thread fallback when the Worker is unavailable or fails
+2. Added `pdf.sidebar.open` to control whether the PDF sidebar opens by default
+3. Added Linux, Windows, and macOS validation to Maven CI
+4. Added a repository security policy and private vulnerability reporting guidance
+
+#### Upgrade Notes
+1. All users running v5.0.0 or earlier are strongly encouraged to upgrade to v5.0.1
+2. JDK 21 or higher remains required, and existing v5.0.0 configuration can be reused
+
+### Version 5.0.0 (April 14, 2026)
+
+#### Improvements
+1. Enhanced xlsx front-end parsing - Improved Excel file front-end rendering performance
+2. Optimized image parsing - Enhanced image processing mechanism
+3. Improved tif parsing - Enhanced TIF format support
+4. Enhanced svg parsing - Optimized SVG vector image rendering
+5. Improved json parsing - Enhanced JSON file processing
+6. Optimized ftp multi-client access - Improved FTP service compatibility
+7. Enhanced home page directory access - Implemented post server-side pagination mechanism
+8. Improved marked parsing - Enhanced Markdown rendering
+9. Redesigned archive preview into a single workspace with a collapsible tree and inline file preview
+10. Improved archive preview file-type badges and single-image preview styling
+11. Added an agent-focused repository guide for engineering automation and maintenance
+12. Refreshed the demo portal pages, including the index, integration guide, release record, and sponsor pages
+
+#### New Features
+1. msg email parsing - Added support for msg format email file preview
+2. heic image parsing - Added support for HEIC format image preview
+3. Cross-domain methods - Added cross-domain processing mechanism
+4. Highlighting methods - Added text highlighting functionality
+5. Pagination methods - Added document page control
+6. AES encryption methods - Added AES encryption support
+7. Basic authentication methods - Added Basic authentication mechanism
+8. Key management methods - Added key management functionality
+9. Anti-duplicate conversion - Added duplicate file conversion protection
+10. Async waiting - Added asynchronous processing mechanism
+11. Upload restrictions - Added restrictions for unsupported file uploads
+12. cadviewer conversion methods - Added CAD viewer conversion functionality
+
+#### Fixed Issues
+1. Compressed file path issues - Fixed internal path handling in compressed files
+2. Security issues - Fixed security vulnerabilities
+3. Incomplete image watermark issues - Fixed incomplete watermark display
+4. SSL self-signed certificate access issues - Fixed compatibility with self-signed certificates
+5. Fixed archive-contained Office files that could stay stuck on loading because repeated extraction appended to existing files
+6. Default Office preview now prefers PDF mode, and PDF preview opens with the thumbnail sidebar visible by default
+7. Updated startup scripts to discover the packaged jar dynamically instead of relying on stale hard-coded jar names
+8. Updated Docker and release helper docs to align with the 5.0.0 release line
+9. Fixed OFD table border overflow rendering issues
+10. Refined the PDF.js compatibility polyfill to avoid preview errors in compatibility environments
+
+#### Updates
+1. JDK version requirement - Mandatory requirement for JDK 21 or higher
+2. pdf front-end parsing update - Upgraded PDF front-end rendering component
+3. odf front-end parsing update - Upgraded ODF document front-end rendering
+4. 3D model front-end parsing update - Upgraded 3D model viewer
+5. pdf backend async conversion optimization - Implemented multi-threaded asynchronous conversion
+6. tif backend async conversion optimization - Implemented multi-threaded asynchronous conversion
+7. Video backend async conversion optimization - Implemented multi-threaded asynchronous conversion
+8. CAD backend async conversion optimization - Implemented multi-threaded asynchronous conversion
+9. Default preview configuration strategy adjusted - Office preview now defaults to PDF mode, the mode switch is hidden by default, and PDF preview opens with the thumbnail sidebar visible. If you need the previous image-first behavior after upgrade, explicitly set `office.preview.type=image` and `office.preview.switch.disabled=false`.
+10. Trust host configuration matching expanded - `trust.host` and related rules now support wildcard and CIDR matching, which may broaden or narrow effective allow/deny behavior after upgrade depending on your patterns
+
+### Version 4.4.0 (January 16, 2025)
+
+#### New Features
+1. xlsx printing support
+2. Added GZIP compression enablement in configuration
+3. CAD format now supports conversion to SVG and TIF formats, added timeout termination and thread management
+4. Added captcha verification for file deletion
+5. Added xbrl format preview support
+6. PDF preview added control over signatures, drawings, illustration control, search positioning pagination, and display content definition
+7. Added CSV format front-end parsing support
+8. Added Docker image support for ARM64
+9. Added Office preview conversion timeout property setting
+10. Added preview file host blacklist mechanism
+
+#### Optimizations
+1. Optimized OFD mobile preview page adaptability
+2. Updated xlsx front-end parsing component to accelerate parsing speed
+3. Upgraded CAD component
+4. Office function adjustments, supporting comments, conversion page limit, watermark generation, etc.
+5. Upgraded markdown component
+6. Upgraded dcm parsing component
+7. Upgraded PDF.JS parsing component
+8. Changed video player plugin to ckplayer
+9. Smarter tif parsing, supporting modified image formats
+10. Improved character encoding detection accuracy for large and small text files, handling concurrency vulnerabilities
+11. Refactored file download code, added general file server authentication access design
+12. Updated bootstrap component and streamlined unnecessary files
+13. Updated epub version, optimized epub display effect
+14. Fixed issue where scheduled cache cleanup only deleted disk cache files for multimedia file types
+15. Auto-detection of installed Office components, added default paths for LibreOffice 7.5 & 7.6 versions
+16. Changed drawio default to preview mode
+17. Added PDF thread management, timeout management, memory cache management, updated PDF parsing component version
+18. Optimized Dockerfile for true cross-platform image building
+
+#### Fixes
+1. Fixed forceUpdatedCache property setting issue where local cache files weren't updated
+2. Fixed PDF decryption error after successful encrypted file conversion
+3. Fixed BPMN cross-domain support issue
+4. Fixed special character error in compressed package secondary reverse proxy
+5. Fixed video cross-domain configuration causing video preview failure
+6. Fixed TXT text pagination secondary loading issue
+7. Fixed Drawio missing Base64 component issue
+8. Fixed Markdown escaping issue
+9. Fixed EPUB cross-domain error
+10. Fixed URL special character issues
+11. Fixed compressed package traversal vulnerability
+12. Fixed compressed file path errors, image collection path errors, watermark issues, etc.
+13. Fixed front-end parsing XLSX containing EMF format file errors
+
+### Version 4.3.0 (July 5, 2023)
+
+#### New Features
+1. Added DCM medical digital imaging preview
+2. Added drawio drawing preview
+3. Added command to regenerate with cache enabled: &forceUpdatedCache=true
+4. Added dwg CAD file preview
+5. Added PDF file password support
+6. Added DPI customization for PDF file image generation
+7. Added configuration to delete converted OFFICE, CAD, TIFF, compressed package source files (enabled by default to save disk space)
+8. Added front-end xlsx parsing method
+9. Added support for pages, eps, iges, igs, dwt, dng, ifc, dwfx, stl, cf2, plt and other formats
+
+#### Optimizations
+1. Modified generated PDF file names to include file extensions to prevent duplicate names
+2. Adjusted SQL file preview method
+3. Optimized OFD preview compatibility
+4. Beautified TXT text pagination box display
+5. Upgraded Linux/Docker built-in office to LibreOffice-7.5.3
+6. Upgraded Windows built-in office to LibreOffice-7.5.3 Portable
+7. Other functional optimizations
+
+#### Fixes
+1. Fixed compressed package path errors in reverse proxy scenarios
+2. Fixed .click error when image preview URLs contain &
+3. Fixed known OFD preview issues
+4. Fixed page error when clicking on file directories (tree nodes) in compressed package preview
+5. Other known issue fixes
+
+### Version 4.2.1 (April 18, 2023)
+
+#### Change Log
+1. Fixed null pointer bug in dwg file preview
+
+### Version 4.2.0 (April 13, 2023)
+
+#### New Features
+1. Added SVG format file preview support
+2. Added encrypted Office file preview support
+3. Added encrypted zip, rar, and other compressed package file preview support
+4. Added xmind software model file preview support
+5. Added BPMN workflow model file preview support
+6. Added eml email file preview support
+7. Added EPUB e-book file preview support
+8. Added office document format support: dotm, ett, xlt, xltm, wpt, dot, xlam, xla, dotx, etc.
+9. Added 3D model file support: obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, ifc, brep, step, iges, fcstd, bim, etc.
+10. Added configurable high-risk file upload restrictions (e.g., exe files)
+11. Added configurable site filing information
+12. Added password requirement for demo site file deletion
+
+#### Optimizations
+1. Added caching for text document preview
+2. Beautified 404, 500 error pages
+3. Optimized invoice and other OFD file preview seal rendering compatibility
+4. Removed office-plugin module, using new jodconverter component
+5. Optimized Excel file preview effect
+6. Optimized CAD file preview effect
+7. Updated xstream, junrar, pdfbox, and other dependency versions
+8. Updated TIF to PDF conversion plugin, added conversion cache
+9. Optimized demo page UI deployment
+10. Compressed package file preview supports directories
+
+#### Fixes
+1. Fixed XSS issues in some interfaces
+2. Fixed console printed demo address not following content-path configuration
+3. Fixed OFD file preview cross-domain issues
+4. Fixed internal self-signed certificate HTTPS URL file download issues
+5. Fixed special character file deletion issues
+6. Fixed OOM caused by unreclaimed memory in PDF to image conversion
+7. Fixed garbled preview for xlsx 7.4+ version files
+8. Fixed TrustHostFilter not intercepting cross-domain interfaces (security issue - upgrade required if using TrustHost)
+9. Fixed compressed package file preview filename garbled issue on Linux systems
+10. Fixed OFD file preview only displaying 10 pages
+
 
 ### Changelog
 > December 14, 2022, version 4.1.0 released:

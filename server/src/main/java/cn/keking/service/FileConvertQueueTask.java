@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ExtendedModelMap;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -73,7 +73,7 @@ public class FileConvertQueueTask {
                         TimeUnit.SECONDS.sleep(10);
                     } catch (Exception ex) {
                         Thread.currentThread().interrupt();
-                        ex.printStackTrace();
+                        logger.error("Failed to sleep after exception", ex);
                     }
                     logger.info("处理预览转换任务异常，url：{}", url, e);
                 }

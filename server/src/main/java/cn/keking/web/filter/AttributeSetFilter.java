@@ -4,8 +4,8 @@ import cn.keking.config.ConfigConstants;
 import cn.keking.config.WatermarkConfigConstants;
 import cn.keking.utils.KkFileUtils;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -38,6 +38,7 @@ public class AttributeSetFilter implements Filter {
         request.setAttribute("pdfDownloadDisable", ConfigConstants.getPdfDownloadDisable());
         request.setAttribute("pdfBookmarkDisable", ConfigConstants.getPdfBookmarkDisable());
         request.setAttribute("pdfDisableEditing", ConfigConstants.getPdfDisableEditing());
+        request.setAttribute("pdfSidebarOpen", ConfigConstants.getPdfSidebarOpen());
         request.setAttribute("switchDisabled", ConfigConstants.getOfficePreviewSwitchDisabled());
         request.setAttribute("fileUploadDisable", ConfigConstants.getFileUploadDisable());
         request.setAttribute("beian", ConfigConstants.getBeian());
@@ -47,6 +48,14 @@ public class AttributeSetFilter implements Filter {
         request.setAttribute("homePagination", ConfigConstants.getHomePagination());
         request.setAttribute("homePageSize", ConfigConstants.getHomePageSize());
         request.setAttribute("homeSearch", ConfigConstants.getHomeSearch());
+        request.setAttribute("isshowaeskey", ConfigConstants.getisShowaesKey());
+        request.setAttribute("isjavascript", ConfigConstants.getisJavaScript());
+        request.setAttribute("xlsxallowEdit", ConfigConstants.getxlsxAllowEdit());
+        request.setAttribute("xlsxshowtoolbar", ConfigConstants.getxlsxShowtoolbar());
+        request.setAttribute("aeskey", ConfigConstants.getaesKey());
+        request.setAttribute("isshowkey", ConfigConstants.getisShowKey());
+        request.setAttribute("kkkey", ConfigConstants.getKey());
+        request.setAttribute("scriptjs", ConfigConstants.getscriptJs());
     }
 
     /**

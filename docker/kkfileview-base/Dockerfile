@@ -5,7 +5,7 @@ RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.aliyun.com@g' /etc/apt/sources.li
     sed -i 's@//ports.ubuntu.com@//mirrors.aliyun.com@g' /etc/apt/sources.list.d/ubuntu.sources &&\
 	apt-get update &&\
     export DEBIAN_FRONTEND=noninteractive &&\
-	apt-get install -y --no-install-recommends openjdk-8-jre tzdata locales xfonts-utils fontconfig libreoffice-nogui &&\
+	apt-get install -y --no-install-recommends openjdk-21-jre tzdata locales xfonts-utils fontconfig libreoffice-nogui &&\
     echo 'Asia/Shanghai' > /etc/timezone &&\
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &&\
     localedef -i zh_CN -c -f UTF-8 -A /usr/share/locale/locale.alias zh_CN.UTF-8 &&\
