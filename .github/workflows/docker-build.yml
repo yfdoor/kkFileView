@@ -6,7 +6,7 @@ on:
       base_tag:
         description: '请输入版本号（确保分支名格式为 vx.x.x，如 v4.4.0）'
         required: true
-        default: '5.0.2'
+        default: '5.0.3'
 
 env:
   REGISTRY: docker.io
